@@ -35,7 +35,7 @@ def start_client(lantern):
         To keep protocol easy to read, converting bytes to RGB color string
         right here using clojure
         """
-        rgb_color = '#%0X%0X%0X' % struct.unpack('>BBB', bytestruct)
+        rgb_color = '#%02X%02X%02X' % struct.unpack('>BBB', bytestruct)
         lantern.set_color(rgb_color)
 
     client = TLVClient(
