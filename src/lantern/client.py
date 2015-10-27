@@ -109,10 +109,11 @@ class TLVClient(object):
     def add_commands_handler(self):
         stream = yield self.connect()
         while not stream.closed():
-            type_, command_args = yield self.receive_commands(stream)
-
-            # call received command
-            self._dispatch(type_, command_args)
+            res = yield self.receive_commands(stream)
+            if res:
+                type_, command_args = res
+                # call received command
+                self._dispatch(type_, command_args)
 
     def start(self):
         logger.debug('IOloop starting')

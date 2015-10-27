@@ -23,7 +23,7 @@ parser.add_option("--console",
                   help="use console lantern")
 
 
-def start_client(lantern):
+def start_client(lantern, host=HOST, port=PORT):
     """
     Starting TLV client with simple lantern protocol implementation
 
@@ -39,8 +39,8 @@ def start_client(lantern):
         lantern.set_color(rgb_color)
 
     client = TLVClient(
-        HOST,
-        PORT,
+        host,
+        port,
         protocol={
             0x12: lantern.power_on,
             0x13: lantern.power_off,

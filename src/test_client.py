@@ -21,7 +21,7 @@ CHANGE_COLOR = lambda col: CHANGE_BYTES(*
 
 
 @contextmanager
-def mock_serve(commands, port=PORT):
+def mock_serve(commands, port=9911):
     def _serve(commands_list):
         server = LanternManagementTestServer()
         server.listen(port)
@@ -31,7 +31,7 @@ def mock_serve(commands, port=PORT):
 
     lantern = Lantern()
     server_process = Process(target=_serve, args=(commands,))
-    lantern_process = Process(target=start_client, args=(lantern,))
+    lantern_process = Process(target=start_client, args=(lantern,), kwargs={'port': port})
 
     server_process.start()
     lantern_process.start()
