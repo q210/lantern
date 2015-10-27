@@ -52,7 +52,10 @@ def start_client(lantern):
         client.start()
     except KeyboardInterrupt:
         logger.info('client was interrupted from keyboard')
+    except Exception as exc:
+        logger.exception('client had thown unhandled exception: %s', repr(exc))
 
+    lantern.destroy()
 
 if __name__ == '__main__':
     logger.debug('starting app')

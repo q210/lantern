@@ -4,6 +4,9 @@ from Queue import Empty
 from Tkinter import Tk, Canvas, Frame, BOTH
 
 from config import REFRESH_RATE
+from log import create_logger
+
+logger = create_logger(__name__)
 
 
 class DCGreenLanternWidget(Frame):
@@ -19,7 +22,7 @@ class DCGreenLanternWidget(Frame):
         )
         self.canvas.pack(fill=BOTH, expand=1)
 
-    def set_color(self, color):
+    def change_color(self, color):
         self.canvas.itemconfig(self.item, outline=color, fill=color)
 
 
@@ -39,16 +42,21 @@ class DCGreenLantern(object):
 
     def check_commands(self, message_q):
         try:
-            new_state = message_q.get(0)
+            new_state = message_q.get(block=False, timeout=REFRESH_RATE / 1000.0)  # timeout value in seconds
+            if new_state is None:
+                logger.debug('termination signal received')
+                self.root.quit()
+                return
+
             self.redraw(new_state)
         except Empty:
             pass
 
-        finally:
-            self.root.after(REFRESH_RATE, self.check_commands, message_q)
+        self.root.after(REFRESH_RATE, self.check_commands, message_q)
 
     def show(self):
         self.root.mainloop()
 
     def redraw(self, state):
-        self.widget.set_color(state[1].replace('0x', '#'))
+        assert isinstance(state[1], basestring), 'color must be a string'
+        self.widget.change_color(state[1])

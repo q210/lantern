@@ -89,7 +89,12 @@ class Lantern(object):
         """
         Send lantern current state to the message queue to cause UI redraw
         """
+        logger.debug('sending message with new state: %s', repr(self.state))
         self.changes_q.put(self.state)
+
+    def destroy(self):
+        self.changes_q.put(None)
+        logger.debug('lantern destroyed')
 
     powered = property(lambda self: self._powered, set_power)
     color = property(lambda self: self._color, set_color)
