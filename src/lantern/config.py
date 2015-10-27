@@ -4,15 +4,15 @@ PORT = 9999
 
 # UI
 DEFAULT_POWERED = False  # powered off
-DEFAULT_COLOR = '0xFFFFFF'  # white
+DEFAULT_COLOR = '#FFFFFF'  # white
 
-BACKGROUND_COLOR = '0x000000' # black
+BACKGROUND_COLOR = '#000000'  # black
 DIMENSIONS = "140x100"
 REFRESH_RATE = 100  # 100 milliseconds
 
 # misc
 LOGGING = {
-    'level': 'DEBUG',
+    'level': 'DEBUG',  # 'INFO'
     'handler': 'StreamHandler',  # 'FileHandler'
     'filepath': 'lantern.log'
 }

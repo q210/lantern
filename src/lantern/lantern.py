@@ -1,4 +1,5 @@
 # coding: utf-8
+from functools import wraps
 from multiprocessing import Queue
 
 from log import create_logger
@@ -13,6 +14,7 @@ def redraw_on_change(meth):
     Sends redraw message if lantern state changes.
     :param meth: lantern method
     """
+    @wraps(meth)
     def _inner(obj, *args, **kwargs):
         old_state = obj.state
 
@@ -66,19 +68,19 @@ class Lantern(object):
     def set_color(self, rgb_color):
         """
         Setter for the `color` attribute.
-        Manages lantern color. Color value must be a bytestring
+        Manages lantern color. Color value must be a string in format '#FFFFFF'
         representing the RGB colors.
 
-        :type rgb_color: bytestring
+        :type rgb_color: string
         :param rgb_color: hex string of RGB color code
         :rtype: NoneType
         """
         try:
-            val = int(rgb_color, 16)
+            val = int(rgb_color.lstrip('#'), 16)
             if val < 0x000000 or val > 0xFFFFFF:
                 raise ValueError('invaid color value:', rgb_color)
         except ValueError:
-            logger.error('invaid color value:', rgb_color)
+            logger.error('invaid color value: %s', rgb_color)
 
         else:
             self._color = rgb_color

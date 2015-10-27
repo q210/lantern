@@ -1,5 +1,6 @@
 # coding: utf-8
-from multiprocessing import Process, Queue
+import struct
+from multiprocessing import Process
 
 from config import HOST, PORT
 from client import TLVClient
@@ -9,36 +10,44 @@ from log import create_logger
 logger = create_logger(__name__)
 
 
-def fake_commands(lantern):
-
-    lantern.power_on()
-    lantern.power_off()
-    lantern.power_on()
-    lantern.set_color('0x00CC00')
-    lantern.power_off()
-
-
 def start_client(lantern):
-    # init TLV client with simple lantern protocol description
+    """
+    Starting TLV client with simple lantern protocol implementation
+
+    :type lantern: Lantern
+    """
+
+    def _set_color_from_bytes(bytestruct):
+        """
+        To keep protocol easy to read, converting bytes to RGB color string
+        right here using clojure
+        """
+        rgb_color = '#%0X%0X%0X' % struct.unpack('>BBB', bytestruct)
+        lantern.set_color(rgb_color)
+
     client = TLVClient(
         HOST,
         PORT,
         protocol={
             0x12: lantern.power_on,
             0x13: lantern.power_off,
-            0x20: lantern.set_color,
+            0x20: _set_color_from_bytes,
         }
     )
 
-    client.listen_commands()
-    lantern.terminate()
+    try:
+        client.start()
+    except KeyboardInterrupt:
+        logger.info('client was interrupted from keyboard')
+
 
 if __name__ == '__main__':
     logger.debug('starting app')
     console = True
 
     # message queue for communication between Lantern object and UI
-    lantern = Lantern(powered=False, color='0x000000')
+    #lantern = Lantern(powered=options.powered, color=options.color)
+    lantern = Lantern()
 
     if not console:
         # importing ui here to allow app run without any graphic environment at all
@@ -48,8 +57,7 @@ if __name__ == '__main__':
         from console import ConsoleLantern
         lantern_ui = ConsoleLantern(message_q=lantern.changes_q)
 
-    p = Process(target=fake_commands, args=(lantern,))
-    # p = Process(target=start_client, args=(lantern,))
+    p = Process(target=start_client, args=(lantern,))
 
     # start lantern client in forked process
     p.start()
