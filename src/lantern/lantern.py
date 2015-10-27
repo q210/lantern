@@ -1,23 +1,52 @@
 # coding: utf-8
-from log import create_logger
+from multiprocessing import Queue
 
-logger = create_logger('lantern', console=True)
+from log import create_logger
+from config import DEFAULT_POWERED, DEFAULT_COLOR
+
+logger = create_logger(__name__)
+
+
+def redraw_on_change(meth):
+    """
+    Decorator.
+    Sends redraw message if lantern state changes.
+    :param meth: lantern method
+    """
+    def _inner(obj, *args, **kwargs):
+        old_state = obj.state
+
+        meth(obj, *args, **kwargs)
+
+        if old_state != obj.state:
+            obj._send_redraw()
+
+    return _inner
 
 
 class Lantern(object):
-    """
-    :param ui_q: queue for passing new lantern state to the associated ui
-    :param initial: initial state values for this lantern
-    """
+    # variables to hold lantern state
+    _powered = DEFAULT_POWERED
+    _color = DEFAULT_COLOR
 
-    _powered = False  # is lantern powered
-    _color = '0xFFFFFF'  # lantern color
+    def __init__(self, powered=DEFAULT_POWERED, color=DEFAULT_COLOR):
+        # queue for lantern state changes
+        # will be used for communication between Lantern object and UI
+        self.changes_q = Queue()
+        self.changes_q.cancel_join_thread()
 
-    def __init__(self, ui_q=None, **initial):
-        self.ui_q = ui_q
-        self.powered = initial.pop('powered', self._powered)
-        self.color = initial.pop('powered', self._color)
+        # set initial state
+        self.powered = powered
+        self.color = color
 
+    @property
+    def state(self):
+        """
+        Return lantern state as a tuple
+        """
+        return (self.powered, self.color)
+
+    @redraw_on_change
     def set_power(self, value):
         """
         Setter for the `powered` attribute. Manages lantern power state.
@@ -27,13 +56,13 @@ class Lantern(object):
         :param value: flag should lantern be powered or not
         :rtype: NoneType
         """
+        if not isinstance(value, bool):
+            raise ValueError('`powered` value must be a boolean')
 
-        assert isinstance(value, bool), '`powered` value must be a boolean'
-
-        if self.powered != value:
+        else:
             self._powered = value
-            self.send_redraw()
 
+    @redraw_on_change
     def set_color(self, rgb_color):
         """
         Setter for the `color` attribute.
@@ -45,20 +74,20 @@ class Lantern(object):
         :rtype: NoneType
         """
         try:
-            int(rgb_color, 16)
+            val = int(rgb_color, 16)
+            if val < 0x000000 or val > 0xFFFFFF:
+                raise ValueError('invaid color value:', rgb_color)
         except ValueError:
             logger.error('invaid color value:', rgb_color)
 
-        if self.color != rgb_color:
+        else:
             self._color = rgb_color
-            self.send_redraw()
 
-    @property
-    def state(self):
-        return (self.powered, self.color)
-
-    def send_redraw(self):
-        self.ui_q.put(self.state)
+    def _send_redraw(self):
+        """
+        Send lantern current state to the message queue to cause UI redraw
+        """
+        self.changes_q.put(self.state)
 
     powered = property(lambda self: self._powered, set_power)
     color = property(lambda self: self._color, set_color)
