@@ -5,6 +5,11 @@ from config import LOGGING
 
 
 def create_logger(name):
+    """
+    Create console or file logger
+
+    :rtype: Logger
+    """
     logger = logging.getLogger(name)
     logger.setLevel(LOGGING['level'])
     logger.propagate = 0

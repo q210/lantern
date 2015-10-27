@@ -12,7 +12,7 @@ REFRESH_RATE = 100  # 100 milliseconds
 
 # misc
 LOGGING = {
-    'level': 'DEBUG',
+    'level': 'INFO',
     'handler': 'StreamHandler',  # or 'FileHandler'
     'filepath': 'lantern.log'
 }
