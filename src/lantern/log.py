@@ -1,16 +1,19 @@
 # coding: utf-8
 import logging
 
-from config import LOGGING_LEVEL, LOGGING_FILE
+from config import LOGGING
+
 
 def create_logger(name, console=False):
     logger = logging.getLogger(name)
-    logger.setLevel(LOGGING_LEVEL)
+    logger.setLevel(LOGGING['level'])
 
-    if console:
+    if LOGGING['handler'] == 'StreamHandler':
         handler = logging.StreamHandler()
+    elif LOGGING['handler'] == 'FileHandler':
+        handler = logging.FileHandler(LOGGING['filepath'])
     else:
-        handler = logging.FileHandler(LOGGING_FILE)
+        raise ValueError('please use FileHandler or StreamHandler for logging')
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)

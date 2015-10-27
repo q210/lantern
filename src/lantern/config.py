@@ -9,5 +9,8 @@ DIMENSIONS = "140x100"
 REFRESH_RATE = 100  # 100 milliseconds
 
 # misc
-LOGGING_LEVEL = 'DEBUG'
-LOGGING_FILE = 'lantern.log'
+LOGGING = {
+    'level': 'DEBUG',
+    'handler': 'StreamHandler',  # 'FileHandler'
+    'filepath': 'lantern.log'
+}
