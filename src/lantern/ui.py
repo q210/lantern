@@ -3,22 +3,68 @@
 from Queue import Empty
 from Tkinter import Tk, Canvas, Frame, BOTH
 
-from config import REFRESH_RATE
+from config import REFRESH_RATE, DEFAULT_COLOR, DEFAULT_POWERED
 from log import create_logger
 
 logger = create_logger(__name__)
 
+SCALE = 0.8  # ui scalling coefficient
+
 
 class DCGreenLanternWidget(Frame):
+    """
+    Green Lantern logo from DC comics
+    (yeah yeah, i'm shitty artist, i know)
+    """
+    green = "#07A007"
+    outline = "#FFFFFF"
+    unpowered = '#C0C0C0'
+
     def __init__(self, parent):
         Frame.__init__(self, parent)
 
         self.pack(fill=BOTH, expand=1)
 
         self.canvas = Canvas(self)
-        self.item = self.canvas.create_rectangle(
-            20, 20, 110, 80,
-            outline="#fb0", fill="#fb0"
+
+        # outer circle
+        kw = {'outline': self.outline, 'fill': self.green}
+        base = 30 * SCALE
+        d = 190 * SCALE
+        s = 10 * SCALE
+        outer_circle = (
+            (base, base, base + d - s, base + d),
+            (base + s, base + s, base + d - s - s, base + d - s)
+        )
+        self.canvas.create_oval(*outer_circle[0], **kw)
+
+        kw['fill'] = '#FFFFFF'
+        self.canvas.create_oval(*outer_circle[1], **kw)
+
+        # inner circle
+        kw = {'outline': self.outline, 'fill': self.green}
+        base = 70 * SCALE
+        d = 100 * SCALE
+        s = 14 * SCALE
+        outer_circle = (
+            (base, base + s, base + d, base + d),
+            (base + s, base + s + s, base + d - s, base + d - s)
+        )
+        self.canvas.create_oval(*outer_circle[0], **kw)
+
+        kw['fill'] = DEFAULT_COLOR if DEFAULT_POWERED else self.unpowered
+        self.item = self.canvas.create_oval(*outer_circle[1], **kw)
+
+        # top bar
+        self.canvas.create_rectangle(
+            base, base, base + d, base + s,
+            outline=self.green, fill=self.green
+        )
+
+        # bottom bar
+        self.canvas.create_rectangle(
+            base, base + d, base + d, base + d + s,
+            outline=self.green, fill=self.green
         )
         self.canvas.pack(fill=BOTH, expand=1)
 
@@ -27,8 +73,11 @@ class DCGreenLanternWidget(Frame):
 
 
 class DCGreenLantern(object):
-    dimensions = "140x100"
-    title = 'Lantern'
+    """
+    This class is responsible for redrawing UI widget
+    """
+    dimensions = "200x200"
+    title = 'Green Lantern'
 
     widget_class = DCGreenLanternWidget
 
