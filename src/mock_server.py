@@ -14,11 +14,13 @@ logger = create_logger(__name__)
 
 class LanternManagementTestServer(tcpserver.TCPServer):
     prepared_commands = None
+    resp_rate = None
 
     def handle_stream(self, stream, address):
         logger.info('client %s connected', address)
         for command in self.prepared_commands:
             if command is None:
+                logger.debug('server quit')
                 sys.exit(1)
 
             try:
@@ -29,7 +31,8 @@ class LanternManagementTestServer(tcpserver.TCPServer):
                 return
 
             # not to be too hasty
-            time.sleep(.5)
+            if self.resp_rate:
+                time.sleep(self.resp_rate)
 
         logger.info('closing connection with %s', address)
 
@@ -52,6 +55,7 @@ if __name__ == '__main__':
             ])
         )
 
+    server.resp_rate = .5
     server.prepared_commands = commands
     server.listen(PORT)
     instance = ioloop.IOLoop.instance()

@@ -25,6 +25,7 @@ def mock_serve(commands, port=9911):
     def _serve(commands_list):
         server = LanternManagementTestServer()
         server.listen(port)
+        # server.resp_rate = .5
         server.prepared_commands = commands_list
         instance = ioloop.IOLoop.instance()
         instance.start()
@@ -46,7 +47,7 @@ def _collect_states(lantern):
     states = []
     while True:
         try:
-            new_state = lantern.changes_q.get(block=False)
+            new_state = lantern.changes_q.get(block=False, timeout=1)
             if new_state is None:
                 break
 
@@ -110,3 +111,8 @@ def test_small_color():
         states = _collect_states(lantern)
 
     assert states == [(False, '#010101')]
+
+    with mock_serve([CHANGE_BYTES(0, 1, 0)]) as lantern:
+        states = _collect_states(lantern)
+
+    assert states == [(False, '#000100')]

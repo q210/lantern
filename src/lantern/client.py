@@ -68,7 +68,7 @@ class TLVClient(object):
             logger.error("failed to connect: %s", repr(exc))
             self.stop()
         else:
-            raise Return((stream))
+            raise Return(stream)
 
     @gen.coroutine
     def receive_commands(self, stream):
@@ -106,7 +106,10 @@ class TLVClient(object):
             raise Return((type_, command_args))
 
     @gen.coroutine
-    def add_commands_handler(self):
+    def run_loop(self):
+        """
+        Connect to server, read all commands in TLV format and dispatch them
+        """
         stream = yield self.connect()
         while not stream.closed():
             res = yield self.receive_commands(stream)
@@ -115,10 +118,12 @@ class TLVClient(object):
                 # call received command
                 self._dispatch(type_, command_args)
 
+        self.stop()
+
     def start(self):
         logger.debug('IOloop starting')
 
-        self.add_commands_handler()
+        self.run_loop()
         ioloop.IOLoop.instance().start()
 
     def stop(self):

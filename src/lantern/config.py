@@ -8,7 +8,7 @@ DEFAULT_COLOR = '#000000'  # black
 
 BACKGROUND_COLOR = '#FFFFFF'  # white
 DIMENSIONS = "140x100"
-REFRESH_RATE = 100  # 100 milliseconds
+REFRESH_RATE = 100  # UI refresh every 100 milliseconds
 
 # misc
 LOGGING = {

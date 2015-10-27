@@ -22,7 +22,7 @@ class ConsoleLantern(object):
 
         while True:
             try:
-                new_state = self.message_q.get(block=False, timeout=REFRESH_RATE / 1000.0)  # timeout value in seconds
+                new_state = self.message_q.get(block=True, timeout=REFRESH_RATE / 1000.0)  # timeout value in seconds
                 if new_state is None:
                     logger.debug('termination signal received')
                     break

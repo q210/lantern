@@ -90,8 +90,14 @@ class DCGreenLantern(object):
         self.root.after(REFRESH_RATE, self.check_commands, message_q)
 
     def check_commands(self, message_q):
+        """
+        Check queue for messages with new lantern state and redraw UI.
+        Close UI if there is None value in the queue.
+
+        :type message_q: multiprocessing.Queue
+        """
         try:
-            new_state = message_q.get(block=False, timeout=REFRESH_RATE / 1000.0)  # timeout value in seconds
+            new_state = message_q.get(block=True, timeout=REFRESH_RATE / 1000.0)  # timeout value in seconds
             if new_state is None:
                 logger.debug('termination signal received')
                 self.root.quit()
