@@ -1,7 +1,7 @@
 # coding: utf-8
 from Queue import Empty
 
-from config import DEFAULT_POWERED, DEFAULT_COLOR, REFRESH_RATE
+from config import REFRESH_RATE
 from log import create_logger
 
 logger = create_logger(__name__)
@@ -14,12 +14,11 @@ class ConsoleLantern(object):
     initial_msg = 'Lantern initialized. Default state: %s, color %s'
     state_chane_msg = 'New state: %s, color: %s'
 
-    def __init__(self, message_q):
+    def __init__(self, message_q, initial_state):
         self.message_q = message_q
+        print self.initial_msg % ('ON' if initial_state[0] else 'OFF', initial_state[1])
 
     def show(self):
-        print self.initial_msg % ('ON' if DEFAULT_POWERED else 'OFF', DEFAULT_COLOR)
-
         while True:
             try:
                 new_state = self.message_q.get(block=True, timeout=REFRESH_RATE / 1000.0)  # timeout value in seconds

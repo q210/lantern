@@ -37,9 +37,9 @@ class Lantern(object):
         self.changes_q = Queue()
         self.changes_q.cancel_join_thread()
 
-        # set initial state
-        self.powered = powered
-        self.color = color
+        # setting initial state
+        self._powered = powered
+        self._color = color
 
     @property
     def state(self):

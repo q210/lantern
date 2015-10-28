@@ -33,7 +33,7 @@ def start_client(lantern, host=HOST, port=PORT):
     def _set_color_from_bytes(bytestruct):
         """
         To keep protocol easy to read, converting bytes to RGB color string
-        right here using clojure
+        right here using closure
         """
         rgb_color = '#%02X%02X%02X' % struct.unpack('>BBB', bytestruct)
         lantern.set_color(rgb_color)
@@ -67,10 +67,10 @@ if __name__ == '__main__':
     if not options.console:
         # importing ui here to allow app run without any graphic environment at all
         from ui import DCGreenLantern
-        lantern_ui = DCGreenLantern(message_q=lantern.changes_q)
+        lantern_ui = DCGreenLantern(message_q=lantern.changes_q, initial_state=lantern.state)
     else:
         from console import ConsoleLantern
-        lantern_ui = ConsoleLantern(message_q=lantern.changes_q)
+        lantern_ui = ConsoleLantern(message_q=lantern.changes_q, initial_state=lantern.state)
 
     p = Process(target=start_client, args=(lantern,))
 

@@ -3,7 +3,7 @@
 from Queue import Empty
 from Tkinter import Tk, Canvas, Frame, BOTH
 
-from config import REFRESH_RATE, DEFAULT_COLOR, DEFAULT_POWERED, DIMENSIONS, BACKGROUND_COLOR
+from config import REFRESH_RATE, DIMENSIONS, BACKGROUND_COLOR
 from log import create_logger
 
 logger = create_logger(__name__)
@@ -20,7 +20,7 @@ class DCGreenLanternWidget(Frame):
     outline = "#FFFFFF"
     unpowered = '#C0C0C0'
 
-    def __init__(self, parent):
+    def __init__(self, parent, initial_state):
         Frame.__init__(self, parent)
         self.pack(fill=BOTH, expand=1)
 
@@ -51,7 +51,7 @@ class DCGreenLanternWidget(Frame):
         )
         self.canvas.create_oval(*outer_circle[0], **kw)
 
-        kw['fill'] = DEFAULT_COLOR if DEFAULT_POWERED else self.unpowered
+        kw['fill'] = initial_state[1] if initial_state[0] else self.unpowered
         self.item = self.canvas.create_oval(*outer_circle[1], **kw)
 
         # top bar
@@ -80,9 +80,9 @@ class DCGreenLantern(object):
 
     widget_class = DCGreenLanternWidget
 
-    def __init__(self, message_q):
+    def __init__(self, message_q, initial_state):
         self.root = Tk()
-        self.widget = self.widget_class(self.root)
+        self.widget = self.widget_class(self.root, initial_state)
 
         self.root.title(self.title)
         self.root.geometry(self.dimensions)
