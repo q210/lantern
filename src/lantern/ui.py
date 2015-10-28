@@ -3,7 +3,7 @@
 from Queue import Empty
 from Tkinter import Tk, Canvas, Frame, BOTH
 
-from config import REFRESH_RATE, DEFAULT_COLOR, DEFAULT_POWERED
+from config import REFRESH_RATE, DEFAULT_COLOR, DEFAULT_POWERED, DIMENSIONS, BACKGROUND_COLOR
 from log import create_logger
 
 logger = create_logger(__name__)
@@ -22,10 +22,9 @@ class DCGreenLanternWidget(Frame):
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
-
         self.pack(fill=BOTH, expand=1)
 
-        self.canvas = Canvas(self)
+        self.canvas = Canvas(self, cnf={'background': BACKGROUND_COLOR})
 
         # outer circle
         kw = {'outline': self.outline, 'fill': self.green}
@@ -38,7 +37,7 @@ class DCGreenLanternWidget(Frame):
         )
         self.canvas.create_oval(*outer_circle[0], **kw)
 
-        kw['fill'] = '#FFFFFF'
+        kw['fill'] = BACKGROUND_COLOR
         self.canvas.create_oval(*outer_circle[1], **kw)
 
         # inner circle
@@ -76,7 +75,7 @@ class DCGreenLantern(object):
     """
     This class is responsible for redrawing UI widget
     """
-    dimensions = "200x200"
+    dimensions = DIMENSIONS
     title = 'Green Lantern'
 
     widget_class = DCGreenLanternWidget

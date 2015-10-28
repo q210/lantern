@@ -7,7 +7,7 @@ DEFAULT_POWERED = False  # powered off
 DEFAULT_COLOR = '#000000'  # black
 
 BACKGROUND_COLOR = '#FFFFFF'  # white
-DIMENSIONS = "140x100"
+DIMENSIONS = "200x200"
 REFRESH_RATE = 100  # UI refresh every 100 milliseconds
 
 # misc
