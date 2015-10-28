@@ -57,7 +57,8 @@ def start_client(lantern, host=HOST, port=PORT):
 
     lantern.destroy()
 
-if __name__ == '__main__':
+
+def main():
     logger.debug('starting app')
     (options, args) = parser.parse_args()
 
@@ -84,3 +85,7 @@ if __name__ == '__main__':
     p.join()
 
     logger.debug('Done.')
+
+
+if __name__ == '__main__':
+    main()
