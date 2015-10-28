@@ -25,10 +25,7 @@ Logging, network, UI settigns can be changed in `src/lantern/config.py`
     py.test
 
 ### Start mock server:
-    python mock_server.py
+    python src/mock_server.py
 
 ### Try from console without installing:
-    python src/app.py --console
-
-### Build package:
-    python setup.py bdist_wheel
+    python src/lantern/app.py --console
